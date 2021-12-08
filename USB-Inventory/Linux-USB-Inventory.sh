@@ -1,4 +1,5 @@
 #!/bin/bash
+# Version 2 - 08 December, 2021
 
 # List all the current USB devices and output "manufacturer | product | serial number | vendor ID | product ID" for each device. 
 # used for generating inventory reports
