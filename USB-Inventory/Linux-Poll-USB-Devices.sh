@@ -1,7 +1,8 @@
 #!/bin/bash
+# Version 2 - 08 December, 2021
 
 # Parses /sys/bus/usb/devices/usb for devices/products that match the $MANIFEST
-# To generate a manifest, download and run "Linux-Make-USB-Manifest.sh" on a machine with the desired devices connected
+# To generate a manifest, download and run "Linux-Make-USB-Manifest.sh"
 
 
 MANIFEST="/etc/USBManifest.txt"
