@@ -7,7 +7,7 @@
 MANIFEST="/etc/USBManifest.txt"
 
 # Check your privilege
-if [ $(whoami) != "root" ]; then
+if [ "$(whoami)" != "root" ]; then
     echo "This script must be run with root/sudo privileges."
     exit 1
 fi
@@ -18,7 +18,7 @@ then
 	touch ${MANIFEST} || ( echo "ERROR: Unable to create ${MANIFEST}" && exit 1)
 else
 	echo "Replacing existing ${MANIFEST}"
-	> ${MANIFEST} || ( echo "ERROR: Unable to create ${MANIFEST}" && exit 1)
+	: > ${MANIFEST} || ( echo "ERROR: Unable to create ${MANIFEST}" && exit 1)
 fi	
 
 
@@ -26,22 +26,22 @@ fi
 for devicePath in /sys/bus/usb/devices/*
 do
 
-        if [ -f ${devicePath}/bDeviceClass ]
+        if [ -f "${devicePath}/bDeviceClass" ]
         then
 
 # if the path includes a device, it will have a device class.
 # check for "hub" class == "09" and skip
 
-        deviceClass=`cat ${devicePath}/bDeviceClass`
+        deviceClass=$("cat ${devicePath}/bDeviceClass")
 
-                if [ ${deviceClass} != "09" ]  # I don't want no hubs.
+                if [ "${deviceClass}" != "09" ]  # I don't want no hubs.
                 then
-                    	vendorID=`cat ${devicePath}/idVendor` 	# all compliant devices will have these
-                        productID=`cat ${devicePath}/idProduct`
+                    	vendorID=$("cat ${devicePath}/idVendor") 	# all compliant devices will have these
+                        productID=$("cat ${devicePath}/idProduct")
 
-						[ -f ${devicePath}/manufacturer ] && manufacturer=`cat ${devicePath}/manufacturer`|| manufacturer="-"	# not all will have readable names/serials
-						[ -f ${devicePath}/product ] && product=`cat ${devicePath}/product`|| product="-"
-						[ -f ${devicePath}/serial ] && serial=`cat ${devicePath}/serial` || serial="-"
+						[ -f "${devicePath}/manufacturer" ] && manufacturer=$("cat ${devicePath}/manufacturer")|| manufacturer="-"	# not all will have readable names/serials
+						[ -f "${devicePath}/product" ] && product=$("cat ${devicePath}/product")|| product="-"
+						[ -f "${devicePath}/serial" ] && serial=$("cat ${devicePath}/serial") || serial="-"
 
 						printf '%s | %s | %s | %s | %s \n' "$manufacturer" "$product" "$serial" "$vendorID" "$productID" >> ${MANIFEST}
 
