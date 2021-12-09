@@ -20,44 +20,44 @@ CHECKLIST=$(cat ${MANIFEST})
 if [ ! -f ${MANIFEST} ]
 then
 	echo "ERROR: No Manifest in ${MANIFEST} - To generate a manifest, download and run Linux-Make-USB-Manifest.sh first."
-	exit 1002
+	exit 2
 fi
 
 # Check your privilege
-if [ $(whoami) != "root" ]; then
+if [ "$(whoami)" != "root" ]; then
     echo "This script must be run with root/sudo privileges."
-    exit 1001
+    exit 1
 fi
 
 # List all the current USB devices
 for devicePath in /sys/bus/usb/devices/*
 do
 
-        if [ -f ${devicePath}/bDeviceClass ]
+        if [ -f "${devicePath}/bDeviceClass" ]
         then
 
 # if the path includes a device, it will have a device class.
 # check for "hub" class == "09" and skip
 
-        deviceClass=`cat ${devicePath}/bDeviceClass`
+        deviceClass=$("cat ${devicePath}/bDeviceClass")
 
-                if [ ${deviceClass} != "09" ]  # I don't want no hubs.
+                if [ "${deviceClass}" != "09" ]  # I don't want no hubs.
                 then
-                    	vendorID=`cat ${devicePath}/idVendor` 	# all compliant devices will have these
-                        productID=`cat ${devicePath}/idProduct`
+                    	vendorID=$("cat ${devicePath}/idVendor") 	# all compliant devices will have these
+                        productID=$("cat ${devicePath}/idProduct")
 
-			DEVICE=$(printf '%s | %s' "$vendorID" "$productID")
+			DEVICE=$("printf '%s | %s' $vendorID $productID")
 
 			# search the manifest for the same device info
-			if [[ $(grep "$DEVICE" ${MANIFEST}) ]]
+			if [[ $("grep -q '$DEVICE' ${MANIFEST}") ]]
 			then
 				((FOUND++))
 				CHECKLIST=$(printf "%s" "$CHECKLIST" | sed "/${DEVICE}/d" )
 			else
 
-				[ -f ${devicePath}/manufacturer ] && manufacturer=`cat ${devicePath}/manufacturer` || manufacturer="unknown"	# not all will have readable names/serials
-				[ -f ${devicePath}/product ] && product=`cat ${devicePath}/product` || product="unknown"
-				[ -f ${devicePath}/serial ] && serial=`cat ${devicePath}/serial` || serial="-"
+						[ -f "${devicePath}/manufacturer" ] && manufacturer=$("cat ${devicePath}/manufacturer")|| manufacturer="-"	# not all will have readable names/serials
+						[ -f "${devicePath}/product" ] && product=$("cat ${devicePath}/product")|| product="-"
+						[ -f "${devicePath}/serial" ] && serial=$("cat ${devicePath}/serial") || serial="-"
 
 				echo "ERROR: Device not in Manifest: ${DEVICE}: ${manufacturer} ${product} ${serial}"
 
@@ -72,7 +72,7 @@ do
 done
 
 echo "Found: ${FOUND} of ${INVENTORY} devices."
-if [ ! -z "${CHECKLIST}" ]
+if [ -n "${CHECKLIST}" ]
 then
 	((ERRORS++))
 	echo "ERROR: MISSING USB DEVICE(S)"
@@ -83,7 +83,7 @@ fi
 # if everything is present, log success and exit 0
 # otherwise, log missing item, exit nonzero
 
-if [ $ERRORS != 0 ]
+if [ "${ERRORS}" != 0 ]
 then
 	ERRORS=1001
 fi
