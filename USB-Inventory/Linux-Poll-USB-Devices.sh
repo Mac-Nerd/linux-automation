@@ -39,7 +39,7 @@ do
 # if the path includes a device, it will have a device class.
 # check for "hub" class == "09" and skip
 
-        deviceClass=$("cat ${devicePath}/bDeviceClass")
+        deviceClass=$(cat "${devicePath}/bDeviceClass")
 
                 if [ "${deviceClass}" != "09" ]  # I don't want no hubs.
                 then
