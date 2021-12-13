@@ -25,26 +25,26 @@ fi
 
 # Check your privilege
 if [ "$(whoami)" != "root" ]; then
-    echo "This script must be run with root/sudo privileges."
-    exit 1
+	echo "This script must be run with root/sudo privileges."
+	exit 1
 fi
 
 # List all the current USB devices
 for devicePath in /sys/bus/usb/devices/*
 do
 
-        if [ -f "${devicePath}/bDeviceClass" ]
-        then
+	if [ -f "${devicePath}/bDeviceClass" ]
+	then
 
 # if the path includes a device, it will have a device class.
 # check for "hub" class == "09" and skip
 
-        deviceClass=$(cat "${devicePath}/bDeviceClass")
+		deviceClass=$(cat "${devicePath}/bDeviceClass")
 
-                if [ "${deviceClass}" != "09" ]  # I don't want no hubs.
-                then
-                    	vendorID=$("cat ${devicePath}/idVendor") 	# all compliant devices will have these
-                        productID=$("cat ${devicePath}/idProduct")
+		if [ "${deviceClass}" != "09" ]	 # I don't want no hubs.
+		then
+			vendorID=$("cat ${devicePath}/idVendor")	# all compliant devices will have these
+			productID=$("cat ${devicePath}/idProduct")
 
 			DEVICE=$("printf '%s | %s' $vendorID $productID")
 
@@ -55,9 +55,9 @@ do
 				CHECKLIST=$(printf "%s" "$CHECKLIST" | sed "/${DEVICE}/d" )
 			else
 
-						[ -f "${devicePath}/manufacturer" ] && manufacturer=$("cat ${devicePath}/manufacturer")|| manufacturer="-"	# not all will have readable names/serials
-						[ -f "${devicePath}/product" ] && product=$("cat ${devicePath}/product")|| product="-"
-						[ -f "${devicePath}/serial" ] && serial=$("cat ${devicePath}/serial") || serial="-"
+				[ -f "${devicePath}/manufacturer" ] && manufacturer=$("cat ${devicePath}/manufacturer")|| manufacturer="-"	# not all will have readable names/serials
+				[ -f "${devicePath}/product" ] && product=$("cat ${devicePath}/product")|| product="-"
+				[ -f "${devicePath}/serial" ] && serial=$("cat ${devicePath}/serial") || serial="-"
 
 				echo "ERROR: Device not in Manifest: ${DEVICE}: ${manufacturer} ${product} ${serial}"
 
@@ -65,9 +65,9 @@ do
 			fi
 
 
-                fi
+		fi
 
-        fi
+	fi
 
 done
 
